@@ -5,10 +5,9 @@ var bodyParser = require('body-parser');
 
 
 //라우팅 모듈 선언
-var indexRouter = require('./routes/index');
-var loginRouter = require('./routes/login/login')
+
 //express 서버 포트 설정
-app.set('port', process.env.PORT || 8001);
+app.set('port', process.env.PORT || 3000);
 
 //서버 생성
 app.listen(app.get('port'), function(){
@@ -20,5 +19,5 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.use(bodyParser.json()); // for parsing application/json
 
 //request 요청 URL과 처리 로직을 선언한 라우팅 모듈 매핑
-app.use('/', indexRouter);
-app.use('/login', loginRouter);
+app.use('/', contact);
+
