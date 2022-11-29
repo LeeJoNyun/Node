@@ -1,0 +1,31 @@
+select	A.*
+  from	(
+Select  ROW_NUMBER() over(order by dba ) no,
+		dba,
+		company,
+		case 
+			when cur_status = 1 then 'FULLY APPROVED'
+			when cur_status = 2 then 'ONLY U/W APPROVED'
+			when cur_status = 3 then 'SUSPENDED'
+			when cur_status = 4 then 'INACTIVE'
+			when cur_status = 5 then 'REVIED'
+			when cur_status = 6 then 'DECLINED'
+			when cur_status = 7 then 'PROSPECT'
+			when cur_status = 8 then 'TERMINATED'
+			when cur_status = 9 then 'OPEN'
+			when cur_status = 10 then 'DOC OK/FUND NO '
+			when cur_status = 11 then 'EXPIRED'
+			when cur_status = 12 then 'DOC OK/FUND OK'
+			when cur_status = 13 then 'CLOSED'
+		end status,
+		address,
+		whole_rep,
+		idnum,
+		brokers_id
+from brokers
+where isNull(brokers_id,'') <> ''
+and cur_status <> '3' and cur_status <> '6' and dba like '%'+''+'%'
+and dba like '%'+''+'%'
+and isNull(dba,'') <> ''
+) A
+where no between 1 and 15
