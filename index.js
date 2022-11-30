@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 //라우팅 모듈 선언
 var contact = require('./routes/contact')
 var reportForm = require('./routes/reportForm')
+var broker = require('./routes/broker')
 //express 서버 포트 설정
 app.set('port', process.env.PORT || 3000);
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json()); // for parsing application/json
 //request 요청 URL과 처리 로직을 선언한 라우팅 모듈 매핑
 app.use('/contact', contact);
 app.use('/reportForm', reportForm);
+app.use('/broker', broker);
 
 
 

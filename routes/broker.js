@@ -9,6 +9,11 @@ router.get('/', async(req,res) => {
     var search = req.params.search;
     var lo_rep = req.params.lo_rep;
     var employ_id = req.params.employ_id;
+    var page = req.params.page;
+    
+    var start = ((page - 1) * 15) + 1
+    var end = page * 15
+    
     var q = `select	A.* 
              from	(
              Select  ROW_NUMBER() over(order by dba ) no,
@@ -92,7 +97,18 @@ router.get('/', async(req,res) => {
 
     q += ` and isnull(dba, '') <> '' `
     q += ` and cur_status in ('1','2','5','7','9','10','12') `
+    q += ` ) A `
+    q += ` where between ${start} and ${end} `
 
+    let pool = await sql.connect(sqlConfig)
+    let result = await pool.request()
+        .query(q)
+        var rtnValue = {
+            status : 200,
+            data : result.recordsets[0]
+        }
+        
+    res.send(rtnValue)
 });
 
 module.exports = router;
