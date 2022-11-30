@@ -4,18 +4,23 @@ const router = express.Router();
 
 
 router.get('/', async(req,res) => {
-    var type = req.params.type;
-    var choice = req.params.choice;
-    var search = req.params.search;
-    var lo_rep = req.params.lo_rep;
-    var employ_id = req.params.employ_id;
-    var page = req.params.page;
+    var type = req.param('type');
+    var choice = req.param('choice');
+    var search = req.param('search') == '' ? "''" :req.param('search');
+    var lo_rep = req.param('lo_rep')  == '' ? "''" : req.param('lo_rep');
+    var employ_id = req.param('employ_id') == '' ? "''" : req.param('employ_id');
+    var page = req.param('page');
     
+    if (type == "pipeline")
+    {
+        choice = 14
+    }
     var start = ((page - 1) * 15) + 1
     var end = page * 15
-    
-    var q = `select	A.* 
-             from	(
+    var paging = '';
+    var q1 = `select	A.* `
+    var q2 = `select count(*) totalCnt `
+    var q = ` from	(
              Select  ROW_NUMBER() over(order by dba ) no,
                     dba,
                     company,
@@ -42,7 +47,7 @@ router.get('/', async(req,res) => {
     q += ` where isNull(brokers_id,'') <> '' `
     if (type == 'aeee'){
         q += ` and whole_rep_id ='${employ_id}'  and dba like '%'${search}'%' `
-    }elseif( type == '')
+    }else if( type == '')
     {
         if (choice = 1){
             q += ` and cur_status <> '3' and cur_status <> '6' and dba like '%'${search}'%' `
@@ -98,14 +103,20 @@ router.get('/', async(req,res) => {
     q += ` and isnull(dba, '') <> '' `
     q += ` and cur_status in ('1','2','5','7','9','10','12') `
     q += ` ) A `
-    q += ` where between ${start} and ${end} `
+    paging += ` where no between ${start} and ${end} `
 
+    res.send(q1 + q + paging)
+    return
     let pool = await sql.connect(sqlConfig)
     let result = await pool.request()
-        .query(q)
+        .query(q1 + q + paging)
+       
+    let count = await pool.request()
+        .query(q2 + q)
         var rtnValue = {
             status : 200,
-            data : result.recordsets[0]
+            data : result.recordsets[0],
+            totalCnt : count.recordset[0]["totalCnt"]
         }
         
     res.send(rtnValue)
