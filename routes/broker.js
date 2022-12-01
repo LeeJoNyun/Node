@@ -13,7 +13,7 @@ router.get('/', async(req,res) => {
     
     if (type == "pipeline")
     {
-        choice = 14
+        choice = 1
     }
     var start = ((page - 1) * 15) + 1
     var end = page * 15
@@ -54,59 +54,60 @@ router.get('/', async(req,res) => {
         }else{
             q += ` and cur_status <> '3' and cur_status <> '6' and whole_rep_id ='${lo_rep}' `
         }
+    }else{
+        switch (choice) {
+            case 1:
+                q += ` and idnum like '%'+${search}+'%' `
+                break;
+            case 2:
+                q += ` and company like '%'+${search}+'%' `
+            case 3:
+                q += ` and whole_rep like '%'+${search}+'%' `
+                break;
+            case 4:
+                q += ` and city like '%'+${search}+'%' `
+                break;
+            case 5:
+                q += ` and state like '%'+${search}+'%' `
+                break;
+            case 6:
+                q += ` and cur_status like '%'+${search}+'%' `
+                break;
+            case 7:
+                q += ` and idnum like '%'+${search}+'%' `
+                break; 
+            case 8:
+                q += ` and phone like '%'+${search}+'%' `
+            case 9:
+                q += ` and fha_no like '%'+${search}+'%' `
+                break; 
+            case 10:
+                q += ` and brok_record like '%'+${search}+'%' `
+                break; 
+            case 11:
+                q += ` and site_id like '%'+${search}+'%' `
+                break; 
+            case 12:
+                q += ` and replace(brok_record_ssn,'-','') like '%'+${search}+'%' `
+                break; 
+            case 13:
+                q += ` and replace(president_ssn,'-','') like '%'+${search}+'%' `
+                break; 
+            default:
+                q += ` and dba like '%'+${search}+'%' `
+                break;
+        }
     }
-    q += ` `
-    switch (choice) {
-        case 1:
-            q += ` and idnum like '%'${search}'%' `
-            break;
-        case 2:
-            q += ` and company like '%'${search}'%' `
-            break;
-        case 3:
-            q += ` and whole_rep like '%'${search}'%' `
-            break;
-        case 4:
-            q += ` and city like '%'${search}'%' `
-            break;
-        case 5:
-            q += ` and state like '%'${search}'%' `
-            break;
-        case 6:
-            q += ` and cur_status like '%'${search}'%' `
-            break;
-        case 7:
-            q += ` and idnum like '%'${search}'%' `
-            break; 
-        case 8:
-            q += ` and phone like '%'${search}'%' `
-        case 9:
-            q += ` and fha_no like '%'${search}'%' `
-            break; 
-        case 10:
-            q += ` and brok_record like '%'${search}'%' `
-            break; 
-        case 11:
-            q += ` and site_id like '%'${search}'%' `
-            break; 
-        case 12:
-            q += ` and replace(brok_record_ssn,'-','') like '%'${search}'%' `
-            break; 
-        case 13:
-            q += ` and replace(president_ssn,'-','') like '%'${search}'%' `
-            break; 
-        default:
-            q += ` and dba like '%'${search}'%' `
-            break;
-    }
-
     q += ` and isnull(dba, '') <> '' `
-    q += ` and cur_status in ('1','2','5','7','9','10','12') `
+
+    if(type == 'general_main'){
+        
+        q += ` and cur_status in ('1','2','5','7','9','10','12') `
+    }
     q += ` ) A `
     paging += ` where no between ${start} and ${end} `
 
-    res.send(q1 + q + paging)
-    return
+   
     let pool = await sql.connect(sqlConfig)
     let result = await pool.request()
         .query(q1 + q + paging)
